@@ -1,0 +1,161 @@
+
+
+
+# Basic analysis of UW Archaeology PhD theses
+
+There are no clear guidelines about the length or structure of a PhD thesis in 
+archaeology at UW. To answer these questions, we decided to make a quick study
+of the norms evident in PhD theses produced in the last ten years. 
+
+## Methods
+
+We made counts of the total number of pages for each theses and the number of pages per chapter. We also made a note of the year the thesis was passed to examine trends over time. We entered the data into a google sheet.
+
+```{r echo = T, message = F, cache = F}
+# setup for interactive plots
+require(rCharts)
+options(RCHART_WIDTH = 600, RCHART_HEIGHT = 400)
+knitr::opts_chunk$set(comment = NA, results = 'asis', 
+                      tidy = F, message = F)
+```
+
+
+```{r message=FALSE, warning=FALSE, cache=TRUE, tidy=FALSE}
+# get data from google sheet
+# connect to google sheet
+require(RCurl) # if you get an error here, see these
+# http://www.dummies.com/how-to/content/
+# how-to-install-load-and-unload-packages-in-r.html
+# http://www.statmethods.net/interface/packages.html
+# http://www.youtube.com/watch?v=u1r5XTqrCTQ
+options(RCurlOptions = list(capath = system.file("CurlSSL", 
+                                                 "cacert.pem", 
+                                                 package = "RCurl"), 
+                            ssl.verifypeer = FALSE))
+#in google spreadsheet, go to file-> publish to web -> 
+# get link to publish to web -> get csv file
+goog <- "https://docs.google.com/spreadsheet/pub?key=0As7CmPqGXTzldC1yT2ZHUURDN1o1a0pBdndxVVFyNHc&output=csv"
+data <- read.csv(textConnection(getURL(goog)), 
+                 stringsAsFactors = FALSE)
+```
+
+
+Has the length of a PhD thesis changed over time? Look at total pages...
+```{r message=FALSE, warning=FALSE}
+# plot year and total pages
+require(ggplot2)
+ggplot(data, aes(year, total.pages)) +
+  # geom_point() +
+  geom_text(aes(label = author.surname)) +
+  geom_rug(position = position_jitter(w = 0.1)) + 
+ # geom_smooth() +
+  theme_minimal() +
+  xlab("Year of thesis submission") +
+  ylab("Total number of pages")
+```
+
+Has the length of a PhD thesis changed over time? Look at body pages...
+```{r message=FALSE, warning=FALSE}
+# plot year and body pages
+require(ggplot2)
+ggplot(data, aes(year, pages.of.body)) +
+  # geom_smooth() +
+  # geom_point() +
+  geom_text(aes(label = author.surname)) +
+  geom_rug(position = position_jitter(w = 0.1)) + 
+  theme_minimal()
+```
+
+
+How many chapters does a PhD thesis have?
+```{r message=FALSE, warning=FALSE, tidy=FALSE}
+require(reshape2)
+data_m <- melt(data, id.var = c('year',  'author.surname' ))
+data_ch <- data_m[data_m$variable %in% 
+                    sapply(1:10, function(i) paste0('pages.ch',i)), ]
+# get table of count of thesis having each chapter
+tab_ch <- aggregate(value ~ variable, data_ch, length) 
+# make new numeric variable for plotting - extract numbers only
+tab_ch$chapter <- as.numeric(gsub("\\D", "", tab_ch$variable))
+
+# plot histogram of chapter distribution
+ggplot(tab_ch, aes(chapter, value)) +
+  geom_bar(stat="identity") +
+  theme_minimal() +
+  scale_x_continuous(breaks=1:10)
+```
+
+
+What is the relationship between the number of chapters and the number of pages?
+```{r message=FALSE, warning=FALSE, results = 'asis', comment = NA, message = F}
+# plot number of chapters and total pages
+require(ggplot2)
+ggplot(data, aes(number.of.chapters, total.pages)) +
+  geom_smooth(se = FALSE) +
+  # geom_point() +
+  geom_text(aes(label = author.surname)) +
+  geom_rug(position = position_jitter(w = 0.1)) + 
+  theme_minimal()
+```
+
+```{r chart1}
+# interactive
+require(rCharts) 
+# javascript uses periods for indexing...
+data$authorsurname    <- data$author.surname 
+data$totalpages       <- data$total.pages
+data$numberofchapters <- data$number.of.chapters
+n1 <- nPlot(totalpages ~ numberofchapters , data = data, type = "scatterChart")
+# n1$addParams(width = 600, height = 300)
+n1$chart(
+  showDistX = TRUE,
+  showDistY = TRUE,
+  tooltipContent = "#! function(key, x, y, e){ 
+  return '<b>Author</b>: ' + e.point.authorsurname
+  } !#"
+)
+n1$print('chart1')
+```
+
+
+How many pages in each chapter?
+```{r message=FALSE, warning=FALSE}
+# boxplot
+require(scales)
+ggplot(data_ch, aes(variable, as.numeric(value))) +
+  geom_boxplot(notch = FALSE) + # if notches overlap = no sig diff
+  # geom_violin() +
+  theme_minimal() +
+  # scale_y_continuous(trans = log2_trans()) +
+  # scale_y_log10() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme(legend.position = "none") 
+
+# plot with authors as data labels and smoother
+ggplot(data_ch, aes(variable, as.numeric(value))) +
+  geom_text(aes(label = author.surname, size = 0.1)) +
+  # geom_smooth(aes(group = 1)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme(legend.position = "none") 
+```
+
+```{r message=FALSE, warning=FALSE, echo=FALSE, eval = FALSE}
+knitr::knit2html("uw_archy_phd_theses.rmd")
+system(paste0("pandoc -o ", 'uw_archy_phd_theses', ".pdf ", 'uw_archy_phd_theses', ".md"))
+
+filen <- 'uw_archy_phd_theses' # name of the markdown file without suffix
+  knitr::knit(paste0(filen,".Rmd"))
+# make PDF
+  system(paste0("pandoc -s ", paste0(filen,".md"), " -t latex -o ", paste0(filen,".pdf"), " --highlight-style=tango  -S"))
+# make DOCX
+  system(paste0("pandoc -s ", paste0(filen,".md"), "  -o ", paste0(filen,".docx"), " --highlight-style=tango  -S"))
+
+
+# summary stats for chapters
+# aggregate(as.numeric(data_ch$value) ~ data_ch$variable, FUN = "summary")
+```
+  
+
+
+
