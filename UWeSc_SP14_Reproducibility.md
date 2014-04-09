@@ -18,6 +18,7 @@ Definitions
 ========================================================
 
 ![alt text](figures/definitions.png)
+<small><small>Stodden, V., et al. 2013. "Setting the default to reproducible." computational science research. SIAM News 46: 4-6.</small></small>
 
 <small><small>"The goal of reproducible research is to tie specific instructions to data analysis and experimental data so that scholarship can be recreated, better understood and verified."  - Max Kuhn, CRAN Task View: Reproducible Research </small></small>
 
@@ -167,7 +168,7 @@ The text and R code are interwoven in the output:
 
 The time is `` `r time` ``
 
-The time is Wed 09 Apr 3:03:52 PM 2014
+The time is Wed 09 Apr 3:08:04 PM 2014
 
 
 Literate programming: for and against 
@@ -226,20 +227,20 @@ Interactive data exploration with the rCharts package
     height: 400px;
   }  
   </style>
-<div id = 'chart1a0329d2a4' class = 'rChart nvd3'></div>
+<div id = 'chartb8458b26e69' class = 'rChart nvd3'></div>
 <script type='text/javascript'>
  $(document).ready(function(){
-      drawchart1a0329d2a4()
+      drawchartb8458b26e69()
     });
-    function drawchart1a0329d2a4(){  
+    function drawchartb8458b26e69(){  
       var opts = {
- "dom": "chart1a0329d2a4",
+ "dom": "chartb8458b26e69",
 "width":    800,
 "height":    400,
 "x": "wt",
 "y": "mpg",
 "type": "scatterChart",
-"id": "chart1a0329d2a4" 
+"id": "chartb8458b26e69" 
 },
         data = [
  {
@@ -731,22 +732,22 @@ Interactive data exploration with the rCharts package
     
   &lt;/head&gt;
   &lt;body&gt;
-    &lt;div id=&#039;chart1a04a1f61ce&#039; class=&#039;rChart nvd3&#039;&gt;&lt;/div&gt;  
+    &lt;div id=&#039;chartb84d9ddbe&#039; class=&#039;rChart nvd3&#039;&gt;&lt;/div&gt;  
     
     &lt;script type=&#039;text/javascript&#039;&gt;
  $(document).ready(function(){
-      drawchart1a04a1f61ce()
+      drawchartb84d9ddbe()
     });
-    function drawchart1a04a1f61ce(){  
+    function drawchartb84d9ddbe(){  
       var opts = {
- &quot;dom&quot;: &quot;chart1a04a1f61ce&quot;,
+ &quot;dom&quot;: &quot;chartb84d9ddbe&quot;,
 &quot;width&quot;:    600,
 &quot;height&quot;:    300,
 &quot;x&quot;: &quot;Hair&quot;,
 &quot;y&quot;: &quot;Freq&quot;,
 &quot;group&quot;: &quot;Eye&quot;,
 &quot;type&quot;: &quot;multiBarChart&quot;,
-&quot;id&quot;: &quot;chart1a04a1f61ce&quot; 
+&quot;id&quot;: &quot;chartb84d9ddbe&quot; 
 },
         data = [
  {
@@ -896,7 +897,7 @@ Interactive data exploration with the rCharts package
 nvd3
  '
 id=iframe-
-chart1a04a1f61ce
+chartb84d9ddbe
 ></iframe>
 <style>iframe.rChart{ width: 100%; height: 400px;}</style>
 
